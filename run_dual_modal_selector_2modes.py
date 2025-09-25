@@ -89,15 +89,31 @@ def setup_sync_internal(inst):
 def run_mode(inst, mode_num):
     """執行指定模式的波形輸出"""
     
-    # 根據模式選擇波形檔案
+    # 根據模式選擇波形檔案和極性設定
     if mode_num == 1:
         file1 = 'modal/25k_50k_84p88deg_2000pts.dat'
         file2 = 'modal/25k_50k_264p88deg_2000pts.dat'
         mode_name = "Mode 1 (25k-50k Hz)"
-    else:
+        ch1_polarity = 'NORM'
+        ch2_polarity = 'INV'
+    elif mode_num == 2:
         file1 = 'modal/47k_94k_57p32deg_2000pts.dat'
         file2 = 'modal/47k_94k_237p32deg_2000pts.dat'
         mode_name = "Mode 2 (47k-94k Hz)"
+        ch1_polarity = 'NORM'
+        ch2_polarity = 'INV'
+    elif mode_num == 3:
+        file1 = 'modal/25k_50k_84p88deg_2000pts.dat'
+        file2 = 'modal/25k_50k_264p88deg_2000pts.dat'
+        mode_name = "Mode 3 (25k-50k Hz, CH1 Inverted)"
+        ch1_polarity = 'INV'
+        ch2_polarity = 'NORM'
+    else:  # mode_num == 4
+        file1 = 'modal/47k_94k_57p32deg_2000pts.dat'
+        file2 = 'modal/47k_94k_237p32deg_2000pts.dat'
+        mode_name = "Mode 4 (47k-94k Hz, CH1 Inverted)"
+        ch1_polarity = 'INV'
+        ch2_polarity = 'NORM'
     
     print(f"\n=== 切換到 {mode_name} ===")
     
@@ -164,11 +180,11 @@ def run_mode(inst, mode_num):
     inst.write('*WAI')
     print("   - Channel 2 已同步到 Channel 1")
     
-    # 在 Track 設定完成後，確保兩個通道都是正常極性
+    # 在 Track 設定完成後，根據模式設定通道極性
     print("正在設定通道極性...")
-    inst.write('OUTP1:POL NORM')  # Channel 1 正常
-    inst.write('OUTP2:POL INV')   # Channel 2 反向
-    print("   - 兩個通道極性設定為 Normal（Channel 2 的反相已在波形數據中處理）")
+    inst.write(f'OUTP1:POL {ch1_polarity}')  # Channel 1 極性
+    inst.write(f'OUTP2:POL {ch2_polarity}')  # Channel 2 極性
+    print(f"   - Channel 1 極性: {ch1_polarity}, Channel 2 極性: {ch2_polarity}")
     
     # 設定同步輸出（可選）
     print("正在設定同步輸出...")
@@ -225,17 +241,23 @@ if __name__ == "__main__":
         try:
             print("\n" + "="*50)
             print("選擇模式：")
-            print("1 - Mode 1 (25k-50k Hz)")
-            print("2 - Mode 2 (47k-94k Hz)")
-            print("3 - 退出程式")
+            print("1 - Mode 1 (25k-50k Hz, CH1:Normal, CH2:Inverted)")
+            print("2 - Mode 2 (47k-94k Hz, CH1:Normal, CH2:Inverted)")
+            print("3 - Mode 3 (25k-50k Hz, CH1:Inverted, CH2:Normal)")
+            print("4 - Mode 4 (47k-94k Hz, CH1:Inverted, CH2:Normal)")
+            print("5 - 退出程式")
             
-            user_input = input("輸入選擇 (1, 2, 或 3): ").strip()
+            user_input = input("輸入選擇 (1, 2, 3, 4, 或 5): ").strip()
             
             if user_input == '1' or user_input.lower() == 'mode1':
                 freq = run_mode(inst, 1)
-            elif user_input == '2':
+            elif user_input == '2' or user_input.lower() == 'mode2':
                 freq = run_mode(inst, 2)
-            elif user_input == '3':
+            elif user_input == '3' or user_input.lower() == 'mode3':
+                freq = run_mode(inst, 3)
+            elif user_input == '4' or user_input.lower() == 'mode4':
+                freq = run_mode(inst, 4)
+            elif user_input == '5':
                 print("正在關閉輸出...")
                 inst.write('OUTP1 OFF')
                 inst.write('OUTP2 OFF')
@@ -245,7 +267,7 @@ if __name__ == "__main__":
                 print("程式已退出")
                 break
             else:
-                print("❌ 無效輸入！請輸入 1, 2, 或 3")
+                print("❌ 無效輸入！請輸入 1, 2, 3, 4, 或 5")
                 
         except KeyboardInterrupt:
             print("\n正在關閉輸出...")
