@@ -54,7 +54,7 @@ def align_waveforms(file1, file2, invert_ch2=True):
     aligned_values1 = aligned_values1 / max(np.abs(aligned_values1))
     aligned_values2 = aligned_values2 / max(np.abs(aligned_values2))
     
-    # *** 關鍵修改：只對 Channel 2 進行反相 ***
+    # *** 對 Channel 2 進行反相 ***
     if invert_ch2:
         aligned_values2 = -aligned_values2
         print("   - Channel 2 波形數據已反相")
