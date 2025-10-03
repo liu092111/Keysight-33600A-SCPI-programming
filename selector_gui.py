@@ -322,14 +322,14 @@ class SimpleModalSelectorGUI:
         self.inst.write('SOUR1:FUNC ARB')
         self.inst.write('SOUR1:FUNC:ARB MODAL_84DEG')
         self.inst.write('SOUR1:FUNC:ARB:SRAT ' + sRate)
-        self.inst.write('SOUR1:VOLT 2.0')
+        self.inst.write('SOUR1:VOLT 0.8')
         self.inst.write('SOUR1:VOLT:OFFS 0')
         
         # Configure Channel 2
         self.inst.write('SOUR2:FUNC ARB')
         self.inst.write('SOUR2:FUNC:ARB MODAL_264DEG')
         self.inst.write('SOUR2:FUNC:ARB:SRAT ' + sRate)
-        self.inst.write('SOUR2:VOLT 2.0')
+        self.inst.write('SOUR2:VOLT 1.8')
         self.inst.write('SOUR2:VOLT:OFFS 0')
         
         # Set basic frequency and phase

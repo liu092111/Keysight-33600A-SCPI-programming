@@ -51,8 +51,8 @@ def align_waveforms(file1, file2, invert_ch2=True):
     aligned_values2 = np.interp(unified_times, times2, values2)
     
     # 正規化信號
-    aligned_values1 = aligned_values1 / max(np.abs(aligned_values1))
-    aligned_values2 = aligned_values2 / max(np.abs(aligned_values2))
+    #aligned_values1 = aligned_values1 / max(np.abs(aligned_values1))
+    #aligned_values2 = aligned_values2 / max(np.abs(aligned_values2))
     
     # *** 對 Channel 2 進行反相 ***
     if invert_ch2:
@@ -88,6 +88,10 @@ def setup_sync_internal(inst):
 
 def run_mode(inst, mode_num):
     """執行指定模式的波形輸出"""
+    
+    # 統一電壓設定 - 只需修改這兩行就能控制所有模式的電壓
+    ch1_voltage = 1.2  # Channel 1 電壓 (所有模式共用)
+    ch2_voltage = 1.2  # Channel 2 電壓 (所有模式共用)
     
     # 根據模式選擇波形檔案和極性設定
     if mode_num == 1:
@@ -152,14 +156,14 @@ def run_mode(inst, mode_num):
     inst.write('SOUR1:FUNC ARB')
     inst.write('SOUR1:FUNC:ARB MODAL_84DEG')
     inst.write('SOUR1:FUNC:ARB:SRAT ' + sRate)
-    inst.write('SOUR1:VOLT 2.0')
+    inst.write(f'SOUR1:VOLT {ch1_voltage}')
     inst.write('SOUR1:VOLT:OFFS 0')
     
     # 配置 Channel 2 參數
     inst.write('SOUR2:FUNC ARB')
     inst.write('SOUR2:FUNC:ARB MODAL_264DEG')
     inst.write('SOUR2:FUNC:ARB:SRAT ' + sRate)
-    inst.write('SOUR2:VOLT 2.0')
+    inst.write(f'SOUR2:VOLT {ch2_voltage}')
     inst.write('SOUR2:VOLT:OFFS 0')
     
     # 設置基本頻率和相位
