@@ -52,9 +52,33 @@ def align_waveforms(file1, file2, invert_ch2=True):
 
 def clear_instrument_memory(inst):
     """清理儀器記憶體"""
+    print("Clearing instrument memory...")
     inst.write('SOUR1:DATA:VOL:CLE')
     inst.write('SOUR2:DATA:VOL:CLE')
     inst.write('*WAI')
+
+def reset_instrument_completely(inst):
+    """完全重置儀器狀態"""
+    print("Resetting instrument...")
+    inst.write('OUTP1 OFF')
+    inst.write('OUTP2 OFF')
+    inst.write('SOUR1:TRACK OFF')
+    inst.write('SOUR2:TRACK OFF')
+    inst.write('*WAI')
+    
+    # 重置波形函數為預設
+    inst.write('SOUR1:FUNC SIN')
+    inst.write('SOUR2:FUNC SIN')
+    inst.write('SOUR1:FREQ 1000')
+    inst.write('SOUR2:FREQ 1000')
+    inst.write('SOUR1:VOLT 0.1')
+    inst.write('SOUR2:VOLT 0.1')
+    inst.write('OUTP1:POL NORM')
+    inst.write('OUTP2:POL NORM')
+    inst.write('*WAI')
+    
+    # 清理自定義波形
+    clear_instrument_memory(inst)
 
 def preload_all_waveforms(inst):
     """預載入所有波形"""
@@ -203,7 +227,7 @@ def switch_mode(inst, mode_num, sampling_rates):
     return mode_data['freq']
 
 if __name__ == "__main__":
-    print("Dual Modal Controller - Working Version")
+    print("Dual Modal Controller - Fixed Version")
     print("Connecting...")
     
     rm = visa.ResourceManager()
@@ -214,10 +238,11 @@ if __name__ == "__main__":
     except:
         pass
     
+    # 完全重置儀器
+    reset_instrument_completely(inst)
+    
     # 初始化
     print("Initializing...")
-    inst.write('OUTP1 OFF')
-    inst.write('OUTP2 OFF')
     inst.write('*CLS')
     inst.write('*WAI')
     
@@ -225,12 +250,19 @@ if __name__ == "__main__":
         sampling_rates = preload_all_waveforms(inst)
         if not sampling_rates:
             print("ERROR: No waveforms loaded!")
+            reset_instrument_completely(inst)
             inst.close()
             exit(1)
         else:
             print(f"Successfully loaded {len(sampling_rates)} mode(s)")
+            
+            # **修復問題1: 自動載入預設模式 (Mode 1)**
+            print("\nAuto-loading default Mode 1...")
+            switch_mode(inst, 1, sampling_rates)
+            
     except Exception as e:
         print(f"Error: {e}")
+        reset_instrument_completely(inst)
         inst.close()
         exit(1)
     
@@ -250,18 +282,24 @@ if __name__ == "__main__":
                     print(f"Mode {mode_num} is not available!")
                 
             elif user_input == 'q':
-                inst.write('OUTP1 OFF')
-                inst.write('OUTP2 OFF')
+                # **修復問題2: 完全清理儀器狀態**
+                print("Cleaning up and exiting...")
+                reset_instrument_completely(inst)
                 inst.close()
+                print("Exit complete!")
                 break
                 
             else:
                 print("Invalid")
                 
         except KeyboardInterrupt:
-            inst.write('OUTP1 OFF')
-            inst.write('OUTP2 OFF')
+            print("\nCleaning up and exiting...")
+            reset_instrument_completely(inst)
             inst.close()
+            print("Exit complete!")
             break
         except Exception as e:
             print(f"Error: {e}")
+            reset_instrument_completely(inst)
+            inst.close()
+            break
