@@ -255,10 +255,11 @@ if __name__ == "__main__":
             exit(1)
         else:
             print(f"Successfully loaded {len(sampling_rates)} mode(s)")
+            print("Ready! Please select a mode to start.")
             
-            # **修復問題1: 自動載入預設模式 (Mode 1)**
-            print("\nAuto-loading default Mode 1...")
-            switch_mode(inst, 1, sampling_rates)
+            # **註解掉自動載入: 等待用戶輸入選擇**
+            # print("\nAuto-loading default Mode 1...")
+            # switch_mode(inst, 1, sampling_rates)
             
     except Exception as e:
         print(f"Error: {e}")
