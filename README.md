@@ -58,6 +58,11 @@ The Teensy 4.1 sketches drive the 33600A with no PC in the loop.
 
 `csv_to_c_array.py` converts the waveform CSVs into `waveform_data.h` for the firmware.
 
+## Part of
+
+This is one of the drivers for [piezo-motor-visual-servo](https://github.com/liu092111/piezo-motor-visual-servo), a camera-in-the-loop controller for a piezoelectric ultrasonic motor.
+
+
 </details>
 
 <details>
@@ -108,5 +113,9 @@ Teensy 4.1 韌體可以直接控制 33600A，不需要電腦。
 | `teensy_ethernet_keysight_controller/` | Ethernet（W5500），固定 IP、關閉 Nagle，詳見 [`OPTIMIZATION_NOTES.md`](teensy_ethernet_keysight_controller/OPTIMIZATION_NOTES.md) |
 
 `csv_to_c_array.py` 會把波形 CSV 轉成韌體用的 `waveform_data.h`。
+
+## 所屬專案
+
+這是 [piezo-motor-visual-servo](https://github.com/liu092111/piezo-motor-visual-servo) 的驅動程式之一。該專案以攝影機閉迴路控制壓電超音波馬達。
 
 </details>
